@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="author" content="Theo Baschak" />
+  <title>SaltStack (for Sys Admins)</title>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <link rel="stylesheet" href="https://secure.ciscodude.net/vendor/reveal.js/css/reveal.min.css"/>
+    <style type="text/css">code{white-space: pre;}</style>
+    <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+    </style>
+    <link rel="stylesheet" href="https://secure.ciscodude.net/vendor/reveal.js/css/theme/simple.css" id="theme">
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+      if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'https://secure.ciscodude.net/vendor/reveal.js/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+      }
+    </script>
+    <!--[if lt IE 9]>
+    <script src="https://secure.ciscodude.net/vendor/reveal.js/lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">SaltStack (for Sys Admins)</h1>
+    <h2 class="author">Theo Baschak</h2>
+    <h3 class="date">MUUG 2015-02-10</h3>
+</section>
+
+<section><section id="intro" class="titleslide slide level1"><h1>Intro</h1></section><section id="overview" class="slide level2">
+<h1>Overview</h1>
+<ul>
+<li>Terminology</li>
+<li>Things possible with SaltStack</li>
+<li>SaltStack docs</li>
+<li>How I use it</li>
+</ul>
+</section><section id="terminology" class="slide level2">
+<h1>Terminology</h1>
+<ul>
+<li>Topology:
+<ul>
+<li>Master</li>
+<li>Minions</li>
+</ul></li>
+<li>States (/srv/salt)</li>
+<li>Pillars (/srv/pillar)</li>
+<li>Grains</li>
+<li>Returners</li>
+</ul>
+</section><section id="things-possible" class="slide level2">
+<h1>Things possible</h1>
+<ul>
+<li>Templating using Jinja
+<ul>
+<li>Re-use/Template: Less states is simpler</li>
+<li>Distribution abstraction (apt+yum)</li>
+</ul></li>
+<li>Standalone Minions</li>
+<li>Return results to CouchDB directly</li>
+<li>Since Python: write your own code</li>
+<li>Salt Cloud
+<ul>
+<li>ec2, Rackspace, DigitalOcean, Proxmox</li>
+<li>OpenStack, vSphere, MS Azure, Linode</li>
+<li>To name a few, <a href="http://docs.saltstack.com/en/latest/topics/cloud/">more in the docs</a></li>
+</ul></li>
+</ul>
+</section><section id="saltdocs" class="slide level2">
+<h1>SaltDocs</h1>
+<p><a href="http://salt.readthedocs.org/en/latest/">salt.readthedocs.org/en/latest/</a></p>
+<ul>
+<li>Very good, useful examples</li>
+<li>Built from main source</li>
+</ul>
+</section><section id="how-i-use-it" class="slide level2">
+<h1>How I use it</h1>
+<ul>
+<li>Package installation and configuration</li>
+<li>Remote Command Execution (Intentional!)</li>
+<li>Performing Mass Upgrades</li>
+<li>Distributed troubleshooting</li>
+<li>Deploy new nameserver in under 2 minutes</li>
+<li>Storing periodic nagios and network checks in CouchDB</li>
+<li>I store/backup my States and Pillars to Git</li>
+<li>I’m barely scratching the surface</li>
+</ul>
+</section></section>
+<section><section id="standard-salt-stuff" class="titleslide slide level1"><h1>Standard Salt Stuff</h1></section><section id="states-n-pillars" class="slide level2">
+<h1>States n Pillars</h1>
+<ul>
+<li><code>salt -v '*' state.highstate</code>; #refreshes all states on all minions</li>
+<li><code>salt -v '*' saltutil.refresh_pillar</code>; #refreshes pillars on all minions</li>
+<li><code>salt '*' nagios.run_pillar ciscodude_services</code>; #run some nagios checks defined in pillar</li>
+</ul>
+</section><section id="returners" class="slide level2">
+<h1>Returners</h1>
+<ul>
+<li><code>salt '*' network.traceroute 8.8.8.8 --return couchdb</code></li>
+</ul>
+</section><section id="sys.doc" class="slide level2">
+<h1>sys.doc</h1>
+<ul>
+<li><code>salt &lt;minion_id&gt; sys.doc</code>
+<ul>
+<li>Shows all modules available, and options for each</li>
+</ul></li>
+<li></li>
+</ul>
+</section></section>
+<section><section id="usage-examples" class="titleslide slide level1"><h1>Usage Examples</h1></section><section id="installation" class="slide level2">
+<h1>Installation</h1>
+<pre class="sourceCode yaml"><code class="sourceCode yaml">/srv/salt/top.sls
+<span class="fu">base:</span>
+  <span class="fu">&#39;os:debian&#39;:</span>
+    <span class="kw">-</span> <span class="fu">match:</span> grain
+    <span class="kw">-</span> settings.ntp.debian
+    <span class="kw">-</span> settings.fail2ban.debian
+    <span class="kw">-</span> settings.apt.cron-apt.debian
+
+  <span class="fu">&#39;G@os:debian and G@city:winnipeg&#39;:</span>
+    <span class="kw">-</span> <span class="fu">match:</span> compound
+    <span class="kw">-</span> settings.apt.apt-proxy.debian</code></pre>
+</section><section id="inst-and-config" class="slide level2">
+<h1>Inst and Config</h1>
+<pre class="sourceCode yaml"><code class="sourceCode yaml">/srv/salt/settings/ntp/debian.sls
+<span class="fu">ntp:</span>
+  <span class="fu">pkg:</span>
+    <span class="kw">-</span> installed
+  <span class="fu">service:</span>
+    <span class="kw">-</span> running
+    <span class="kw">-</span> <span class="fu">require:</span>
+      <span class="kw">-</span> <span class="fu">pkg:</span> ntp
+    <span class="kw">-</span> <span class="fu">watch:</span>
+      <span class="kw">-</span> <span class="fu">file:</span> /etc/ntp.conf
+
+<span class="fu">/etc/ntp.conf:</span>
+  <span class="fu">file:</span>
+    <span class="kw">-</span> managed
+    <span class="kw">-</span> <span class="fu">source:</span> salt://settings/ntp/ntp.conf
+    <span class="kw">-</span> <span class="fu">require:</span>
+      <span class="kw">-</span> <span class="fu">pkg:</span> ntp</code></pre>
+</section><section id="config-cont" class="slide level2">
+<h1>Config (cont)</h1>
+<pre><code>/srv/salt/settings/ntp/ntp.conf
+driftfile /var/lib/ntp/ntp.drift
+statistics loopstats peerstats clockstats
+filegen loopstats file loopstats type day enable
+filegen peerstats file peerstats type day enable
+filegen clockstats file clockstats type day enable
+server time.mbix.ca iburst
+server ntp.torix.ca iburst
+server 2.debian.pool.ntp.org iburst
+server 3.debian.pool.ntp.org iburst
+restrict -4 default kod notrap nomodify nopeer noquery
+restrict -6 default kod notrap nomodify nopeer noquery
+restrict 127.0.0.1
+restrict ::1</code></pre>
+</section><section id="cmd.run" class="slide level2">
+<h1>cmd.run</h1>
+<ul>
+<li><code>salt -G apt:true cmd.run 'apt-get -s dist-upgrade'</code></li>
+</ul>
+<pre><code>ns2.henchman21.net:
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+ns0.ciscodude.net:
+    Reading package lists...
+    Building dependency tree...
+    Reading state information...
+    0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+...</code></pre>
+</section></section>
+<section><section id="mass-upgrades" class="titleslide slide level1"><h1>Mass Upgrades</h1></section><section id="mass-upgrades-1" class="slide level2">
+<h1>Mass Upgrades</h1>
+<ul>
+<li>Safe, systematic way:
+<ul>
+<li><code>salt '*' pkg.refresh_db</code></li>
+<li><code>salt '*' cmd.run 'apt-get -s dist-upgrade'</code></li>
+<li><code>salt '*' pkg.upgrade</code></li>
+</ul></li>
+<li>Or just one specific package:
+<ul>
+<li>This was handy for HeartBleed and Bash</li>
+<li><code>salt '*' pkg.install bash refresh=True</code></li>
+<li><code>salt '*' pkg.install openssl refresh=True</code></li>
+<li><code>salt '*' pkg.install libc6 refresh=True</code></li>
+<li><code>salt '*' service.restart nginx</code></li>
+</ul></li>
+</ul>
+</section><section id="system" class="slide level2">
+<h1>1 System</h1>
+<p><code>salt secure.ciscodude.net pkg.upgrade</code></p>
+<pre><code>secure.ciscodude.net:
+    ----------
+    changes:
+        ----------
+        prosody:
+            ----------
+            new:
+                0.9.7-1~wheezy1
+            old:
+                0.9.6-1~wheezy2
+    comment:
+
+    result:
+        True</code></pre>
+</section></section>
+<section><section id="conclusion" class="titleslide slide level1"><h1>Conclusion</h1></section><section id="the-end" class="slide level2">
+<h1>The End</h1>
+<ul>
+<li><p>TRY IT!</p></li>
+<li><p>Presentation source/download available at <a href="https://github.com/tbaschak/salt-muug">github</a></p></li>
+</ul>
+</section></section>
+    </div>
+  </div>
+
+
+  <script src="https://secure.ciscodude.net/vendor/reveal.js/lib/js/head.min.js"></script>
+  <script src="https://secure.ciscodude.net/vendor/reveal.js/js/reveal.min.js"></script>
+
+  <script>
+
+      // Full list of configuration options available here:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        theme: 'sky', // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+          { src: 'https://secure.ciscodude.net/vendor/reveal.js/lib/js/classList.js', condition: function() { return !document.body.classList; } },
+          { src: 'https://secure.ciscodude.net/vendor/reveal.js/plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+          { src: 'https://secure.ciscodude.net/vendor/reveal.js/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } },
+//          { src: 'https://secure.ciscodude.net/vendor/reveal.js/plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; }, }
+//          { src: 'https://secure.ciscodude.net/vendor/reveal.js/plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+]});
+    </script>
+    </body>
+</html>
