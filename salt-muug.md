@@ -68,7 +68,7 @@
 
 *   `salt <minion_id> sys.doc`
     *   Shows all modules available, and options for each
-*   
+*   `grep` is handy
 
 # Usage Examples
 
